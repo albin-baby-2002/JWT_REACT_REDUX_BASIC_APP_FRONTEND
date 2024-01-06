@@ -60,7 +60,7 @@ const Login = () => {
             );
           
             console.log(JSON.stringify(response?.data));
-            navigate(from,{replace:true})
+            navigate('/',{replace:true})
             const userName = response?.data?.user;
             const accessToken = response?.data?.accessToken;
             const roles = response?.data?.roles;

@@ -18,7 +18,9 @@ const ProtectedRoute = ({Element,allowedRoles, ...rest}:{Element:React.Component
     
     auth?.roles.find(role => allowedRoles.includes(role))
     ?<Element />
-    :<Navigate to='..' replace={true}/>
+   
+    : auth?.user?  <Navigate to='..' replace={true}/> :
+    <Navigate to='/login' replace={true}/>
     
   )
   
