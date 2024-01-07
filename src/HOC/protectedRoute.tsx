@@ -7,14 +7,15 @@ const ProtectedRoute = ({Element,allowedRoles, ...rest}:{Element:React.Component
     
     const {auth} = useAuth() as AuthType;
     
-    useEffect(()=>{
-        console.log(auth);
+    // useEffect(()=>{
+    //     console.log(auth);
         
-    })
+    // })
     
   
  
   return (
+    
     
     auth?.roles.find(role => allowedRoles.includes(role))
     ?<Element />

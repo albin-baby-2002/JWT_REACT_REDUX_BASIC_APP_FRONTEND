@@ -2,7 +2,7 @@
 import { ReactNode, createContext, useState } from "react";
 
 export interface auth {
-    roles: number[]
+    roles: number[] 
     accessToken:string 
     user:string
 }

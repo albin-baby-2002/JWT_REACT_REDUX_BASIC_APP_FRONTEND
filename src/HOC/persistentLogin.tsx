@@ -32,9 +32,11 @@ const PersistentLogin = () => {
             }
         }
         
+        console.log('persistent login')
+        
         !auth?.accessToken ? refreshJwt_SetAuth(): setIsloading(false)
         
-    },[])
+    },[auth])
     
   return (
    isloading ? <p>Loading ...</p> : <Outlet/> 

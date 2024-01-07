@@ -26,16 +26,17 @@ function App() {
   const router = createBrowserRouter(createRoutesFromElements(
     <> 
     
-   <Route  element={<PersistentLogin/>}>
+   <Route path="/" element={<PersistentLogin/>}>
     
+     <Route index element={<Home/>}/>
     <Route path="/register" element={<Register/>}/>
     <Route path="/login" element={<Login/>}/>
     
-     <Route path="/" element={<ProtectedRoute Element={Home} allowedRoles={[ROLES_LIST.User,ROLES_LIST.Admin]}></ProtectedRoute>}/>
      
     <Route path="/admin" element={ <ProtectedRoute Element={Admin} allowedRoles={[ROLES_LIST.Admin]}></ProtectedRoute>}/>
     
     <Route path="/users" element={ <ProtectedRoute Element={Users} allowedRoles={[ROLES_LIST.Admin]}></ProtectedRoute>}/>
+    
    </Route>
     
     
