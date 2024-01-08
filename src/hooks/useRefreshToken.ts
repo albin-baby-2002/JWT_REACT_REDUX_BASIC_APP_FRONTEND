@@ -1,11 +1,13 @@
+import { useDispatch } from "react-redux"
 import axios from "../api/axios"
-import { AuthType } from "../context/authContext"
-import useAuth from "./useAuth"
+
+import { setAuth } from "../redux/auth"
 
 
 const UseRefreshToken = () => {
  
-    const {setAuth} = useAuth() as AuthType
+    
+    const dispatch = useDispatch()
     
     const refresh = async ()=>{
         
@@ -13,14 +15,8 @@ const UseRefreshToken = () => {
             withCredentials:true
         });
         
-        setAuth((prev: any) =>{
-            
-            console.log('prev: ',prev);
-            console.log('new: ',response.data.accessToken);
-            
-            
-            return{...prev,accessToken:response.data.accessToken ,roles:response.data.roles,user:response.data.user}
-        })
+        dispatch(setAuth({accessToken:response.data.accessToken ,roles:response.data.roles,user:response.data.user}))
+        
         
         return response.data.accessToken
     }

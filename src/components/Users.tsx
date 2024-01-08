@@ -7,7 +7,6 @@ const Users = () => {
     
     const navigate =  useNavigate();
     
-    
     const [users,setUsers] = useState()
     
     const axiosPrivate = useAxiosPrivate()

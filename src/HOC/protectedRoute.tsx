@@ -1,19 +1,13 @@
 import React, { ReactElement, useEffect } from "react";
-import useAuth from "../hooks/useAuth";
-import { AuthType } from "../context/authContext";
-import { Navigate, Route, } from "react-router-dom";
 
-const ProtectedRoute = ({Element,allowedRoles, ...rest}:{Element:React.ComponentType,allowedRoles:number[]}) => {
+import { Navigate, Route, } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+
+const ProtectedRoute = ({Element,allowedRoles,}:{Element:React.ComponentType,allowedRoles:number[]}) => {
+
+    const auth = useSelector((state:RootState)=>state.auth)
     
-    const {auth} = useAuth() as AuthType;
-    
-    // useEffect(()=>{
-    //     console.log(auth);
-        
-    // })
-    
-  
- 
   return (
     
     

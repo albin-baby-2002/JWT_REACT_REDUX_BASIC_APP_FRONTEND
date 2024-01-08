@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import  { axiosPrivate } from "../api/axios"
-import { AuthType } from "../context/authContext"
-import useAuth from "./useAuth"
 import UseRefreshToken from "./useRefreshToken";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const useAxiosPrivate = () => {
     
-    const {auth} = useAuth() as AuthType;
+    const auth = useSelector((state:RootState)=>state.auth);
     
     const refresh = UseRefreshToken();
     

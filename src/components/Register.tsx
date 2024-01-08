@@ -3,17 +3,23 @@ import { faCheck, faTimes, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "../api/axios";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import { AuthType } from "../context/authContext";
 
-const USER_REGEX = /^[A-Za-z][A-Za-z0-9-_]{0,23}( [A-Za-z][A-Za-z0-9-_]{0,23})?$/
+
+
+
+const USER_REGEX = /^[A-Za-z]{3,}( [A-Za-z]+)?$/;
+
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+const IND_PHONE_REGEX = /^(\+91[\-\s]?)?[6789]\d{9}$/;
+
 const REGISTER_URL = '/register';
+
+
 
 const Register = () => {
   
-    const {auth} = useAuth() as AuthType
-    
     const navigate = useNavigate()
     
     const userRef = useRef<HTMLInputElement>(null);
@@ -21,6 +27,12 @@ const Register = () => {
 
     const [user, setUser] = useState('');
     const [validName, setValidName] = useState(false);
+    
+    const [email, setEmail] = useState("");
+    const [validEmail, setValidEmail] = useState(false);
+    
+    const [phone, setPhone] = useState("");
+    const [validPhone, setValidPhone] = useState(false);
   
 
     const [pwd, setPwd] = useState('');
@@ -37,36 +49,46 @@ const Register = () => {
         
         userRef.current?.focus();
         
-        console.log(auth);
-        
-        
     },[])
     
+    
     useEffect(()=>{
-        
+      
         setValidName(USER_REGEX.test(user));
         
     },[user])
+    
+    useEffect(()=>{
+        
+        setValidEmail(EMAIL_REGEX.test(email));
+        
+    },[email])
+    
+    useEffect(()=>{
+        
+        setValidPhone(IND_PHONE_REGEX.test(phone));
+        
+    },[phone])
+    
     
     useEffect(() => {
         setValidPwd(PWD_REGEX.test(pwd));
         setValidMatch(pwd === matchPwd);
     }, [pwd, matchPwd])
     
+    
     useEffect(()=>{
         
         setErrMsg('')
-    },[user,pwd,matchPwd])
+    },[user,pwd,matchPwd,email,phone])
+    
     
     const handleSubmit = async(e:FormEvent)=>{
         
         e.preventDefault();
         
-        console.log('submit');
         
-        
-        
-        if(!validName || !validPwd || !validMatch || !user || !pwd || !matchPwd){
+        if(!validName || !validPwd || !validMatch|| !email || !phone || !user || !pwd || !matchPwd || !validEmail || !validPhone ){
             
             setErrMsg('invalid Credentials')
             
@@ -74,26 +96,46 @@ const Register = () => {
         }
         
         try {
+          
             const response = await axios.post(REGISTER_URL,
-                JSON.stringify({ user, pwd }),
+                JSON.stringify({ user, pwd , email, phone }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
                 }
             );
           
-            console.log(JSON.stringify(response?.data));
+          
             navigate('/login')
+            
             setUser('');
             setPwd('');
             setMatchPwd('');
+            
         } catch (err:any) {
+          
             if (!err?.response) {
+              
                 setErrMsg('No Server Response');
+                
+            } else if (err.response?.status === 400){
+              
+              setErrMsg('All Fields are Mandatory')
+              
             } else if (err.response?.status === 409) {
-                setErrMsg('Username Taken');
-            } else {
+              
+                setErrMsg('Email Taken');
+                
+            } else if (err.response?.status === 500) {
+              
+                setErrMsg('Oops! Something went wrong. Please try again later.');
+                
+            } 
+            
+            else {
+              
                 setErrMsg('Registration Failed')
+                
             }
             
         }
@@ -110,7 +152,7 @@ const Register = () => {
        
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark: text-emerald-200">
               Create an account
             </h1>
             
@@ -134,6 +176,51 @@ const Register = () => {
                
                 
               </div>
+              
+              
+               <div>
+                <label htmlFor="UserEmail" className="flex gap-2 items-end mb-2 text-sm font-medium text-gray-900 dark:text-white">Email  <FontAwesomeIcon icon={faCheck} className={validEmail ? " block text-md mb-[1.5px] text-green-400" : " hidden "} /> 
+                            <FontAwesomeIcon icon={faTimes} className={validEmail || !email ? "hidden" : " block   text-red-600  text-md mb-[2px]"} /></label>
+                <input
+                  type="email"
+                  name="email"
+                  id="UserEmail"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  required
+                  value={email}
+               
+                  onChange={(e)=>(setEmail(e.target.value))}
+                
+                />
+                
+               
+                
+              </div>
+              
+                 <div>
+                <label htmlFor="UserPhone" className="flex gap-2 items-end mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone  <FontAwesomeIcon icon={faCheck} className={validPhone ? " block text-md mb-[1.5px] text-green-400" : " hidden "} /> 
+                            <FontAwesomeIcon icon={faTimes} className={validPhone || !phone ? "hidden" : " block   text-red-600  text-md mb-[2px]"} /></label>
+                <input
+                  type="text"
+                  name="text"
+                  id="UserPhone"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  required
+                  value={phone}
+               
+                  onChange={(e)=>(setPhone(e.target.value))}
+                
+                />
+                
+               
+                
+              </div>
+              
+              
+              
+              
+              
+              
               <div>
                 <label htmlFor="password" className=" flex items-end gap-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">Password 
                 <FontAwesomeIcon icon={faCheck} className={validPwd ? " block text-md mb-[1.5px] text-green-400" : " hidden "} /> 
@@ -170,7 +257,7 @@ const Register = () => {
               <button 
               disabled={!validName || ! validPwd || !validMatch ? true:false}
                 type="submit"
-                className="w-full text-bg-primary-600 font-bold bg-white hover:bg-slate-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                className="w-full text-bg-primary-600 font-bold bg-white hover:bg-emerald-300 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 Create an account
               </button>

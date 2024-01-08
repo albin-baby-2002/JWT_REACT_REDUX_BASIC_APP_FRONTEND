@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { AuthType } from "../context/authContext";
-import useAuth from "../hooks/useAuth";
 import UseRefreshToken from "../hooks/useRefreshToken"
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { AuthInfo } from "../redux/auth";
 
 
 
 const PersistentLogin = () => {
     
-    const [isloading,setIsloading] = useState(true)
+    const [isLoading,setIsLoading] = useState(true)
     
     const refresh = UseRefreshToken();
     
-    const {auth} = useAuth() as AuthType
+    const auth = useSelector((state:RootState)=>state.auth);
     
     useEffect(()=>{
         
@@ -28,18 +29,19 @@ const PersistentLogin = () => {
                 
             }
             finally{
-                setIsloading(false)
+                
+                setIsLoading(false)
             }
         }
         
-        console.log('persistent login')
+      
         
-        !auth?.accessToken ? refreshJwt_SetAuth(): setIsloading(false)
+        !auth?.accessToken ? refreshJwt_SetAuth(): setIsLoading(false)
         
     },[auth])
     
   return (
-   isloading ? <p>Loading ...</p> : <Outlet/> 
+   isLoading ? <p>Loading ...</p> : <Outlet/> 
   )
 }
 

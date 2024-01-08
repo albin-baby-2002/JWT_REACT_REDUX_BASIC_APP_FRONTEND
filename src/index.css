@@ -1,14 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 /* App.css - Global styles */
-body, html,.root {
-  height: 100%;
+body, html,#root {
+  height: 100vh;
   margin: 0;
   padding: 0;
 
 }
 
 .App {
-  height: 100%; /* Ensure your root container takes the full height */
+  height: 100vh; /* Ensure your root container takes the full height */
 }
