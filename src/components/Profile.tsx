@@ -1,15 +1,123 @@
 
 import profileImg from '../Assets/profile img.jpeg'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFileUpload, faXmark} from '@fortawesome/free-solid-svg-icons'
+import { ChangeEvent, useEffect, useState } from 'react'
+import useLogout from '../hooks/useLogout'
+import useAxiosPrivate from '../hooks/useAxiosPrivate'
 
-import { faFileUpload} from '@fortawesome/free-solid-svg-icons'
+const PROFILE_DATA_URL = '/user/profile/data'
+
+const PROFILE_IMG_URL = '/user/profile/image'
+
+interface Profile_Info {
+    
+    username:string,
+    email:string,
+    phone:string,
+    image:string
+}
 
 const Profile = () => {
-  return (
-    <div className=" bg-slate-900  flow-root h-full">
+    
+    let isMounted = false;
+    
+    const logout = useLogout();
+    
+    const axiosPrivate = useAxiosPrivate()
+    
+    const [displayModal , setDisplayModal] = useState(false)
+    
+    const [fetchTrigger,setFetchTrigger] = useState(true)
+    
+    const [profile,setProfile] = useState<Profile_Info | null>(null)
+    
+    const [imageFile,setImageFile] = useState<File|null>(null)
+    
+    const handleImgUpload = async()=>{
         
-        <div className=' text-right text-white font-bold  pt-6 cursor-pointer hover:opacity-80 w-[90%]  pr-4 mx-auto '>Logout</div>
+        const formData = new FormData();
+        
+        if(imageFile){
+            
+             formData.append('profileImg',imageFile,imageFile.name)
+             
+             console.log(formData)
+             
+             const response = await axiosPrivate.post(PROFILE_IMG_URL,formData,{ headers: {
+                 'Content-Type': 'multipart/form-data',
+                }},)
+                
+                setDisplayModal(false)
+                
+                setFetchTrigger((prev)=>!prev)
+        }
+        
+       
+        
+        
+    }
+    
+     
+    
+    
+    useEffect(()=>{
+        
+        isMounted= true;
+        
+        const controller = new AbortController();
+        
+        const getUserData = async ()=>{
+            
+            try{
+               
+                const response = await axiosPrivate.get(PROFILE_DATA_URL, {
+                    headers: {
+                    'Content-Type': 'application/json',
+                },
+                signal: controller.signal,
+                });
+
+                
+                console.log('profile info',response.data)
+                
+               isMounted && setProfile(response?.data)
+                
+                
+            }
+            catch(err:any){
+                
+                 if(!err.response){
+                console.error(err?.message)
+                    
+                }
+                
+                if(err?.response?.status === 401 || err?.response?.status === 403 ){
+                     console.error(err?.response)
+                    
+                }
+                
+            }
+            
+           
+            
+        }
+        
+        getUserData()
+        
+        
+        return ()=>{
+            isMounted = false,
+            controller.abort()
+        }
+        
+    },[fetchTrigger])
+    
+  return (
+    <div className=" bg-slate-900  relative flow-root h-full">
+        
+        <div className=' text-right text-white font-bold  pt-6 cursor-pointer hover:opacity-80 w-[90%]  pr-4 mx-auto ' 
+        onClick={async()=>{  logout()}}>Logout</div>
     
         
         
@@ -23,9 +131,9 @@ const Profile = () => {
                     
                     
                     <div className=' relative'>
-                        <img src={profileImg} className='rounded-md ' alt="" />
+                        <img src={`http://localhost:3000/public/img/profileImages/${profile?.image}`} className='rounded-md  h-48 ' alt="" />
                         
-                        <FontAwesomeIcon className=' absolute top-0 px-3 cursor-pointer mr-2 rounded-lg py-2 mt-2  bg-slate-950 hover:opacity-80 text-white right-0 h-4' icon={faFileUpload}></FontAwesomeIcon>
+                        <FontAwesomeIcon onClick={()=>{setDisplayModal(true)}}  className=' absolute top-0 px-3 cursor-pointer mr-2 rounded-lg py-2 mt-2  bg-slate-950 hover:opacity-80 text-white right-0 h-4' icon={faFileUpload}></FontAwesomeIcon>
                     </div>
                 
                 
@@ -38,19 +146,19 @@ const Profile = () => {
                         <div className=' flex w-full text-2xl'>
                             
                     
-                            <p> Albin Baby</p>
+                            <p> {profile?.username}</p>
                         </div>
                         <div className=' flex w-full'>
                             
                             <p> Email : </p>
                     
-                            <p className=' ps-2'> albinbtg@gmail.com</p>
+                            <p className=' ps-2'> {profile?.email}</p>
                         </div>
                         <div className=' flex w-full'>
                             
                             <p> Phone : </p>
                     
-                            <p className=' ps-2'> 65986232323</p>
+                            <p className=' ps-2'> {profile?.phone}</p>
                         </div>
                     
                     
@@ -61,6 +169,31 @@ const Profile = () => {
             
              
         </div>
+        
+        
+        <div className={`${displayModal?'flex':'hidden'} absolute w-full h-full  top-0  bg-slate-900/30  items-center justify-center`}>
+            <div  className='   min-h-60  min-w-96 bg-black rounded-md text-white '>
+                
+                <div className=' flex justify-end text-xl mr-5 pt-5'>
+                    <FontAwesomeIcon className=' cursor-pointer' onClick={()=>{setDisplayModal(false)}} icon={faXmark}></FontAwesomeIcon>
+                </div>
+                
+                <div className=' flex  flex-col justify-center items-center'>
+                <p className=' text-center py-3 font-bold'> Img Upload</p>
+                
+                <input className='  border-2 border-white mt-3' type="file" onChange={(event:ChangeEvent<HTMLInputElement>)=>{ setImageFile( event.target.files?.[0] || null)}} />
+                
+                <button onClick={()=>{handleImgUpload()}} className=' mt-8   bg-slate-900 px-4  py-2 rounded-lg hover:outline outline-2 outline-offset-2 outline-white '>UPLOAD IMAGE</button>
+                    
+                </div>
+                
+            
+            
+            
+        </div>
+            
+        </div>
+        
       
     </div>
   )

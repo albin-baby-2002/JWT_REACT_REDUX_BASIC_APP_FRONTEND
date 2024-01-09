@@ -8,13 +8,18 @@ const useAxiosPrivate = () => {
     
     const auth = useSelector((state:RootState)=>state.auth);
     
+     
+    
     const refresh = UseRefreshToken();
     
     useEffect(()=>{
+       
         
         const requestInterceptor = axiosPrivate.interceptors.request.use(
             
             config =>{
+                
+                
                 
                 if(!config.headers['Authorization']){
                     

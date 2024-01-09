@@ -6,6 +6,7 @@ import Home from "./components/Home"
 import Users from "./components/Users"
 import PersistentLogin from "./HOC/persistentLogin"
 import Profile from "./components/Profile"
+import AdminLogin from "./components/AdminLogin"
 
 const ROLES_LIST = {
     "Admin": 5150,
@@ -13,12 +14,7 @@ const ROLES_LIST = {
     "User": 2001
 }
 
-const Admin = ()=>{
-  
-  return(
-    <h1>WElcome admins</h1>
-  )
-}
+
 
 function App() {
 
@@ -32,13 +28,13 @@ function App() {
     <Route index element={<Home/>}/>
     <Route path="/register" element={<Register/>}/>
     <Route path="/login" element={<Login/>}/>
+    <Route path="/admin/login" element={<AdminLogin/> }/>
     
      
-    <Route path="/admin" element={ <ProtectedRoute Element={Admin} allowedRoles={[ROLES_LIST.Admin]}></ProtectedRoute>}/>
     
      <Route path="/profile" element={ <ProtectedRoute Element={Profile} allowedRoles={[ROLES_LIST.User]}></ProtectedRoute>}/>
     
-    <Route path="/users" element={ <ProtectedRoute Element={Users} allowedRoles={[ROLES_LIST.Admin]}></ProtectedRoute>}/>
+    <Route path="/admin/users" element={ <ProtectedRoute Element={Users} allowedRoles={[ROLES_LIST.Admin]}></ProtectedRoute>}/>
     
    </Route>
     

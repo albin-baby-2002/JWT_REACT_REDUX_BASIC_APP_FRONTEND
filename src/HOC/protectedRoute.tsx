@@ -13,7 +13,7 @@ const ProtectedRoute = ({Element,allowedRoles,}:{Element:React.ComponentType,all
     
     auth?.roles.find(role => allowedRoles.includes(role))
     ?<Element />
-   
+   : allowedRoles.find(role=> role === 5150)? <Navigate to='/admin/login' replace={true}/>
     : auth?.user?  <Navigate to='..' replace={true}/> :
     <Navigate to='/login' replace={true}/>
     

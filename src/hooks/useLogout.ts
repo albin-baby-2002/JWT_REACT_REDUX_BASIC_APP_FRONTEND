@@ -18,6 +18,7 @@ const useLogout = () => {
             });
              
             dispatch(setAuth(null))
+            
         } catch (err) {
             console.error(err);
         }

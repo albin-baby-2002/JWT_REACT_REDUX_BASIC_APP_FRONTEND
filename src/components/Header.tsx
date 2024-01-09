@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <header className=' fixed top-0 w-full   bg-slate-800  text-white font-MerriWeather px-4  '>
         
-        <div className=' flex max-w-7xl mx-auto pt-4 pb-1 justify-between'>
+        <div className=' flex max-w-7xl mx-auto pt-6 pb-1 justify-between'>
             
             
            
@@ -37,10 +37,10 @@ const Header = () => {
             <section className=" flex items-center">
                  <div className=" flex text-xl font-bold gap-5   text-[#c9d3d7]">
                     
-                    <div className="hover:text-white cursor-pointer"><Link to='/admin'>Admin</Link></div>
-                    <div className="hover:text-white cursor-pointer"><Link to='/users'>Users</Link></div>
-                    <div className="hover:text-white cursor-pointer">Info</div>
-                    <div className="hover:text-white cursor-pointer">Profile</div>
+                    <div className="hover:text-white hover:scale-110 cursor-pointer"><Link to='/'>Products</Link></div>
+                    <div className="hover:text-white hover:scale-110 cursor-pointer"><Link to='/'>Services</Link></div>
+                    <div className="hover:text-white hover:scale-110 cursor-pointer">Our Team</div>
+                    <div className="hover:text-white hover:scale-110 cursor-pointer">Connect</div>
                     
                 </div>
             </section>

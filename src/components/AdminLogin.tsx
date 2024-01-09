@@ -10,9 +10,9 @@ import { Link, useNavigate, } from 'react-router-dom';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-const LOGIN_URL = '/auth';
+const ADMIN_LOGIN_URL = '/admin/auth';
 
-const Login = () => {
+const AdminLogin = () => {
   
     const dispatch = useDispatch()  
     const navigate = useNavigate();
@@ -60,7 +60,7 @@ const Login = () => {
         
         try {
           
-            const response = await axios.post(LOGIN_URL,
+            const response = await axios.post(ADMIN_LOGIN_URL,
                 JSON.stringify({ email, pwd }),
                 
                 {
@@ -69,7 +69,7 @@ const Login = () => {
                 }
             );
           
-            navigate('/',{replace:true})
+            navigate('/admin/users',{replace:true})
             
             const userName = response?.data?.user;
             const accessToken = response?.data?.accessToken;
@@ -95,7 +95,11 @@ const Login = () => {
               
                 setErrMsg('Email Not Registered ');
                 
+            } else if (err.response?.status === 403){
+                
+                setErrMsg("You Don't Have Admin privileges")
             }
+            
             else if (err.response?.status === 401) {
               
                 setErrMsg(' Wrong Email or Password');
@@ -117,15 +121,17 @@ const Login = () => {
   return  (
     
     <section className="bg-gray-50 dark:bg-gray-900 py-7 min-h-screen">
-      <div className="flex flex-col items-center justify-center px-6 pt-10 mx-auto n ">
+      <div className="flex flex-col items-center justify-center px-6  mx-auto n "> 
+      
+        <h1 className='pt-10 text-3xl pb-10 text-white font-bold'> Admin Login Page</h1>
         
          <p className={errMsg?"mb-7 flex  absolute  top-6 right-3 items-center justify-between  bg-red-300  min-w-[300px] px-4 py-1 rounded-md font-mono":"hidden "}>Error: {errMsg } <FontAwesomeIcon  onClick={()=>{setErrMsg('')}} icon={faXmark} className=" cursor-pointer   ps-2 "/></p>
        
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full bg-white rounded-lg shadow  md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-900">
+            
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-emerald-300">
-              Sign in to your account
-            </h1>
+            
+           
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className=" flex gap-2 items-end  mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Email  <FontAwesomeIcon icon={faCheck} className={validEmail ? " block text-md mb-[1.5px] text-green-400" : " hidden "} /> 
@@ -164,9 +170,7 @@ const Login = () => {
               >
                 Sign in
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet? <a className="font-medium text-primary-600 hover:underline dark:text-primary-500"> <Link to='/register'>Sign up</Link></a>
-              </p>
+             
             </form>
           </div>
         </div>
@@ -175,4 +179,4 @@ const Login = () => {
   );
 }
 
-export default Login
+export default AdminLogin
