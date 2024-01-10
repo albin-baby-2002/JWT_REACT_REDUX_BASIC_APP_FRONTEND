@@ -3,6 +3,21 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate"
 import { useNavigate } from "react-router-dom"
 import useLogout from "../hooks/useLogout";
 import Row from "./Row";
+import EditUserModal from "./EditUserModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import AddUserModal from "./AddUsersModal";
+
+const USER_MANAGEMENT_URL = '/admin/users'
+
+ export type user = {
+    
+    _id:string,
+    username:string,
+    email:string,
+    phone:string
+    
+}
 
 
 const Users = () => {
@@ -11,11 +26,40 @@ const Users = () => {
     
     const logout = useLogout();
     
-    const [users,setUsers] = useState()
+    const [searchQuery, setSearchQuery] = useState('')
+    
+    const [users,setUsers] = useState <user[] | []>([]);
+    
+    const [filteredUsers,setFilteredUsers] = useState <user[] | []>([]);
+    
+    const [triggerUserUpdate, setTriggerUserUpdate] = useState(false);
+    
+    const [userToEdit , setUserToEdit] = useState<user | null>(null);
+    
+    const [showEditModal, setShowEditModal] = useState(false);
+    
+    const [showAddUserModal,setShowAddUserModal] = useState(false)
+    
     
     const axiosPrivate = useAxiosPrivate()
     
+    
     useEffect(()=>{
+        
+      const filteredUsers = users.filter((user) =>
+      user.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    setFilteredUsers(filteredUsers)
+        
+    },[searchQuery])
+    
+   
+    
+    
+    useEffect(()=>{
+        
+     
         
         let isMounted = true;
         
@@ -25,14 +69,17 @@ const Users = () => {
             
             try{
                 
-                const response = await axiosPrivate.get('/admin/users',{
+                console.log('data of users collected')
+                
+                const response = await axiosPrivate.get(USER_MANAGEMENT_URL,{
                     headers:{'Content-Type':'application/json'},
                     signal:controller.signal
                 })
                 
-                console.log(response?.data)
+              
                 
-                isMounted && setUsers(response.data.yes)
+                isMounted && setUsers(response.data) ;
+                isMounted && setFilteredUsers(response.data);
                 
             }
             catch(err:any){
@@ -58,34 +105,98 @@ const Users = () => {
             controller.abort()
         }
         
-    },[])
+    } , [triggerUserUpdate ,showAddUserModal])
+    
+    
+    const handleUserDeletion = async (userId:String)=>{
+        
+        
+        try{
+            
+            
+            console.log('delete' , userId);
+            
+            
+            const response = await axiosPrivate.delete(`${USER_MANAGEMENT_URL}/${userId}`)
+            
+            
+            console.log(response.data)
+            
+            setTriggerUserUpdate((prev)=>!prev)
+            
+        }
+        
+        catch(err){
+            
+            window.alert('failed deletion')
+        }
+        
+    }
+    
     
   return (
-    <main className=" bg-slate-800 h-full w-full flow-root">
+    
+    <main className="  bg-zinc-300 min-h-full w-full flow-root">
         
-        <div onClick={()=>{
-            
-            logout() }} className=" text-end text-white text-xl font-bold mr-6 cursor-pointer hover:text-white/75 mt-4">Logout
-            
-        </div>
         
-        <h1 className=" text-center  text-5xl font-MerriWeather text-emerald-400 pb-10 font-semibold"> Kings User Base </h1>
-        
-        <div className=" w-[80%] mx-auto">
+        <div className=" w-[80%] mx-auto pt-7 mb-7">
             
-            <div className=" w-full  bg-slate-300 h-9 flex  ">
+            <div className=" flex justify-between pb-7">
                 
-                <div className=" flex-grow font-bold  text-center  border-r border-r-black flex  items-center justify-center" >  <p> User Name</p></div>
-                <div className=" flex-grow font-bold text-center  border-r border-r-black flex  items-center justify-center " >  <p>Email Id</p>  </div>
-                <div className=" flex-grow font-bold  text-center border-r border-r-black flex  items-center justify-center "> <p>Phone</p>  </div>
+                <h1 className=" text-  text-5xl  font-mono    text font-semibold"> Kings User Base </h1>
                 
-                <div className=" flex-grow font-bold  text-center border-r border-r-black flex  items-center justify-center "> <p>Actions</p>  </div>
+                <div onClick={()=>{
+                    
+                    logout() }} className=" text-end text-slate-900 text-xl font-bold mr-6 cursor-pointer hover:text-slate-900/75 mt-4">Logout
+                    
+                </div>
                 
             </div>
             
-            <Row/>
+            <div className=" my-5 ms-1  flex  gap-6">
+                
+                <input className=" text-lg p-1 ps-2 rounded-lg  text-white bg-black border-2 border-black outline-none" type="text" placeholder="search"
+                
+                value={searchQuery}
+                
+                onChange={(e)=>{
+                    setSearchQuery(e.target.value)
+                }}
+                
+                />
+                
+                <div className=" flex items-center bg-black text-white px-5 rounded-lg cursor-pointer ">
+                    
+                    <FontAwesomeIcon icon={faUserPlus}
+                    onClick={()=>{
+                        setShowAddUserModal(true)
+                    }}
+                    ></FontAwesomeIcon>
+                    
+                </div>
+                
+            </div>
+            
+            {filteredUsers?.map((user)=>(
+                
+                <Row  key={user._id} id={user._id} username={user.username} email={user.email} phone={user.phone} handleUserDeletion={handleUserDeletion} setShowEditModal={setShowEditModal} setUserToEdit={setUserToEdit}  />
+               
+            ))}
             
         </div>
+        
+        
+        {/* edit user modal */}
+        
+        
+       <EditUserModal showEditModal={showEditModal} setShowEditModal={setShowEditModal} userToEdit={userToEdit} setTriggerUserUpdate ={setTriggerUserUpdate} />
+       
+       
+       <AddUserModal showAddUserModal={showAddUserModal} setShowAddUserModal={setShowAddUserModal}  />
+        
+        
+       
+       
     
     </main>
   )
