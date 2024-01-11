@@ -192,7 +192,7 @@ const Users = () => {
        <EditUserModal showEditModal={showEditModal} setShowEditModal={setShowEditModal} userToEdit={userToEdit} setTriggerUserUpdate ={setTriggerUserUpdate} />
        
        
-       <AddUserModal showAddUserModal={showAddUserModal} setShowAddUserModal={setShowAddUserModal}  />
+       <AddUserModal showAddUserModal={showAddUserModal} setShowAddUserModal={setShowAddUserModal} setTriggerUserUpdate ={setTriggerUserUpdate}  />
         
         
        

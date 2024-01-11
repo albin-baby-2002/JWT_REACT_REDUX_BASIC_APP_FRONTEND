@@ -2,11 +2,12 @@
 
 import axios from '../api/axios';
 import { setAuth } from '../redux/auth';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { faCheck, faTimes, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useRef, useState, useEffect, FormEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate, } from 'react-router-dom';
+import { RootState } from '../store/store';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -19,6 +20,7 @@ const Login = () => {
   
 
     const userRef = useRef<HTMLInputElement>(null);
+     const auth = useSelector((state:RootState)=>state.auth)
    
 
     const [email, setEmail] = useState('');
@@ -31,6 +33,11 @@ const Login = () => {
     useEffect(() => {
       
         userRef?.current?.focus();
+        
+        if(auth?.accessToken){
+          
+          navigate('/')
+        }
         
     }, [])
     

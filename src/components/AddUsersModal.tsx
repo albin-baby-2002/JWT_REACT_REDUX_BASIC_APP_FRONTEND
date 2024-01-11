@@ -25,11 +25,12 @@ type props ={
     
     showAddUserModal:Boolean,
     setShowAddUserModal:React.Dispatch<React.SetStateAction<boolean>>,
+    setTriggerUserUpdate:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
 
-const AddUserModal = ({showAddUserModal,setShowAddUserModal}:props) => {
+const AddUserModal = ({showAddUserModal,setShowAddUserModal,setTriggerUserUpdate}:props) => {
   
     
     const axiosPrivate = useAxiosPrivate()
@@ -123,6 +124,8 @@ const AddUserModal = ({showAddUserModal,setShowAddUserModal}:props) => {
             setMatchPwd('');
             setEmail('')
             setPhone('')
+            
+            setTriggerUserUpdate((prev)=>!prev)
             
             setShowAddUserModal(false)
            

@@ -16,11 +16,7 @@ const authSlice = createSlice({
         
         setAuth:(state:null | AuthInfo,action)=>{
             
-     
-            
           return action.payload 
-            
-             
             
         }
     }
